@@ -1,0 +1,8 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim
+WORKDIR /home/app
+
+COPY src src
+COPY tests tests
+
+RUN dotnet test tests/Consumer.Tests/Consumer.Tests.csproj
+RUN dotnet test tests/Provider.Tests/Provider.Tests.csproj

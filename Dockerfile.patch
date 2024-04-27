@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine
+WORKDIR /home/app
+
+COPY src src
+COPY tests tests
+
+RUN wget https://github.com/pact-foundation/pact-reference/releases/download/libpact_ffi-v0.4.19/libpact_ffi-linux-x86_64-musl.so.gz
+RUN gzip -d libpact_ffi-linux-x86_64-musl.so.gz
+
+RUN dotnet build tests/Consumer.Tests/Consumer.Tests.csproj
+RUN cp -f libpact_ffi-linux-x86_64-musl.so tests/Consumer.Tests/bin/Debug/net8.0/runtimes/linux-x64/native/libpact_ffi.so
+RUN dotnet test --no-build tests/Consumer.Tests/Consumer.Tests.csproj
+
+RUN dotnet build tests/Provider.Tests/Provider.Tests.csproj
+RUN cp -f libpact_ffi-linux-x86_64-musl.so tests/Provider.Tests/bin/Debug/net8.0/runtimes/linux-x64/native/libpact_ffi.so
+RUN dotnet test --no-build tests/Provider.Tests/Provider.Tests.csproj
+
